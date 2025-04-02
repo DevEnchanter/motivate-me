@@ -962,3 +962,65 @@ footer a:hover {
     align-items: center;
     gap: 0.5rem;
 }
+
+/* App Version Selector */
+.app-version-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.version-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    border-radius: 12px;
+    background-color: var(--card-color);
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(50, 50, 93, 0.1);
+}
+
+.version-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(50, 50, 93, 0.15);
+}
+
+.version-btn i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+.version-btn span {
+    font-weight: 500;
+}
+
+.version-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+.mobile-version {
+    border-color: var(--accent-color);
+}
+
+.desktop-version.active {
+    border-color: var(--primary-color);
+    background-color: rgba(108, 92, 231, 0.05);
+}
+
+@media (min-width: 600px) {
+    .app-version-selector {
+        flex-direction: row;
+    }
+    
+    .version-btn {
+        flex: 1;
+    }
+}

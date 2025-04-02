@@ -1,83 +1,51 @@
-# MotivateMe App
+# MotivateMe
 
-An app designed specifically for those difficult days when you feel stuck in a loop, unmotivated, or unsure how to break free from patterns that aren't serving you.
-
-## Who This App Is For
-
-This app is designed for:
-- People who feel stuck in an endless loop of work, eat, sleep, repeat
-- Those who want to change but don't know where to start
-- Anyone who struggles with motivation or depression
-- People who find existing motivation apps overwhelming
-
-## How It's Different
-
-Unlike typical motivation apps that assume you already have some baseline motivation, MotivateMe meets you exactly where you are:
-- **No Minimum Requirements**: Feeling terrible? Can't get out of bed? That's okay.
-- **Micro-Steps Focus**: Suggests ridiculously small actions that feel doable even on your worst days.
-- **Emergency Support**: Quick help when you're feeling particularly stuck or overwhelmed.
-- **Non-Judgmental**: No streaks to break, no perfectionism required.
+A simple web application designed to provide support and structure for individuals dealing with low motivation.
 
 ## Features
 
-- **Emergency Help Section**: For when you're feeling particularly stuck
-- **Micro-Goals**: Ridiculously small actions that are hard to say no to
-- **Mood Tracking**: Simple acknowledgment of how you're feeling without judgment
-- **Daily Activities**: Create your own manageable tasks, as small as needed
-- **Reflection Space**: Simple prompts focused on noticing, not achieving
-- **Gentle Reminders**: Compassionate quotes that emphasize self-kindness
-- **Your Words**: A private space to review your reflections and see patterns
-- **Why This Helps**: Scientific explanations for the mechanisms behind small changes
-- **Dark/Light Modes**: Visual settings for comfort
-- **Offline Support**: Works without internet once loaded
+### Desktop Version
+- **Emergency Help**: Quick access to breathing exercises, grounding techniques, and resources
+- **Micro Goals**: Small, achievable tasks when feeling overwhelmed
+- **Mood Tracking**: Simple mood check-in with supportive messages
+- **Task Management**: Break down your day into manageable tasks
+- **Reflection**: Daily prompts to encourage mindfulness and gratitude
+- **Streak Tracking**: Visual representation of your consistent usage
 
-## How to Use It (for Very Low Motivation Days)
+### Mobile-Optimized Version
+The mobile version includes all the desktop features plus:
+- **Offline Support**: Works without an internet connection
+- **Installable**: Can be added to your home screen like a native app
+- **Push Notifications**: Optional reminders to check in
+- **Enhanced Features**: Energy level tracking, micro-steps, and interface customization
 
-1. **Just Open the App**: That's already a win. Simply opening it counts.
+See [README-ENHANCED.md](README-ENHANCED.md) for details on the latest enhancements focused on low motivation.
 
-2. **If You're Really Struggling**: 
-   - Click the "Feeling Stuck Right Now?" section
-   - Try the "Just Breathe" or "Tiny Task" option
-   - No pressure to do more than this
+## How to Use
 
-3. **When You Can Do a Little More**:
-   - Check off one of the pre-made micro-goals
-   - Note your current mood
-   - Read a gentle reminder
+### Desktop Version
+1. Open `index.html` in your web browser
+2. Navigate through the sections to find what you need in the moment
+3. Start with just one small action or check-in
 
-4. **For Slightly Better Days**:
-   - Add your own small task
-   - Write a brief reflection
-   - Review past entries if helpful
+### Mobile Version
+1. Open `mobile.html` in your phone's browser
+2. Follow the prompt to add the app to your home screen
+3. Enable notifications if you'd like reminders
+4. Use the bottom navigation to switch between features
 
-Remember: There is no "falling behind" or "failing" with this app. Any interaction with it is progress.
+## Why It Works
 
-## Installation
+The application is based on principles from:
+- Behavioral activation therapy
+- Tiny habits methodology
+- Self-compassion research
+- Friction reduction for behavior change
 
-1. Simply open the `index.html` file in any modern web browser.
-2. For mobile use, you can create a shortcut to the file on your home screen.
-3. The app works offline and stores data locally in your browser.
+## About
 
-## Why Small Steps Work
+MotivateMe was created to provide a simple, judgment-free space for people who are struggling with motivation. It focuses on small, achievable steps and recognizes that sometimes even opening the app is a significant accomplishment.
 
-The app is built on principles from psychology and neuroscience:
+## License
 
-- **Breaking Neural Loops**: Even tiny actions disrupt negative thought patterns
-- **Momentum Building**: Small successes create psychological momentum
-- **Reduced Resistance**: Micro-steps bypass the brain's resistance to change
-- **Self-Compassion**: Gentle approaches increase motivation more effectively than self-criticism
-
-## A Note for Difficult Days
-
-If you're reading this on a day when everything feels impossible, remember:
-
-1. You don't need to use all features of the app
-2. Opening it and doing one tiny thing is enough
-3. No matter how small your action, it matters
-4. Tomorrow is another chance
-
-Sometimes surviving the day is achievement enough.
-
----
-
-Created with understanding for those who feel stuck and need a gentle path forward. 
+This project is open source under the MIT license. 

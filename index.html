@@ -3,142 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MotivateMe - Break Free</title>
+    <title>MotivateMe</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
         <header>
             <h1>MotivateMe</h1>
-            <p class="tagline">One small step at a time.</p>
+            <p class="tagline">Small steps for when motivation is low</p>
         </header>
 
-        <main>
-            <section class="emergency-help" id="emergency-section">
-                <div class="emergency-header">
-                    <h2>Feeling Stuck Right Now?</h2>
-                    <button id="toggle-emergency" class="toggle-btn"><i class="fas fa-chevron-down"></i></button>
-                </div>
-                <div class="emergency-content" id="emergency-content">
-                    <div class="emergency-options">
-                        <button class="emergency-btn" data-action="breathe">
-                            <i class="fas fa-wind"></i>
-                            <span>Just Breathe</span>
-                        </button>
-                        <button class="emergency-btn" data-action="tiny-task">
-                            <i class="fas fa-leaf"></i>
-                            <span>Tiny Task</span>
-                        </button>
-                        <button class="emergency-btn" data-action="kind-words">
-                            <i class="fas fa-heart"></i>
-                            <span>Kind Words</span>
-                        </button>
-                        <button class="emergency-btn" data-action="why-try">
-                            <i class="fas fa-question-circle"></i>
-                            <span>Why Try?</span>
-                        </button>
-                    </div>
-                    <div id="emergency-display" class="emergency-display">
-                        <p>Select an option above when you're feeling overwhelmed or stuck.</p>
-                    </div>
-                </div>
-            </section>
+        <div class="app-version-selector">
+            <a href="mobile.html" class="version-btn mobile-version">
+                <i class="fas fa-mobile-alt"></i>
+                <span>Mobile-Optimized Version</span>
+                <span class="version-desc">With reminders & offline support</span>
+            </a>
+            <a href="index.html" class="version-btn desktop-version active">
+                <i class="fas fa-desktop"></i>
+                <span>Desktop Version</span>
+                <span class="version-desc">Original version</span>
+            </a>
+        </div>
 
-            <section class="micro-goals">
-                <h2>Just For Today</h2>
-                <p class="section-intro">Start with something incredibly small. So small it seems ridiculous to say no.</p>
+        <section class="section emergency-help">
+            <div class="section-header">
+                <h2>Emergency Help</h2>
+                <button class="toggle-btn" id="toggle-emergency"><i class="fas fa-chevron-up"></i></button>
+            </div>
+            <div id="emergency-content">
+                <p class="section-intro">If you're experiencing a crisis or need immediate support:</p>
+                <div class="emergency-options">
+                    <button class="emergency-btn" id="breathing-btn">
+                        <i class="fas fa-wind"></i>
+                        <span>Breathing Exercise</span>
+                    </button>
+                    <button class="emergency-btn" id="grounding-btn">
+                        <i class="fas fa-tree"></i>
+                        <span>Grounding</span>
+                    </button>
+                    <button class="emergency-btn" id="resources-btn">
+                        <i class="fas fa-phone"></i>
+                        <span>Crisis Resources</span>
+                    </button>
+                </div>
+                <div id="emergency-display" class="emergency-display">
+                    <p>Select an option above for immediate support techniques.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section micro-goals">
+            <div class="section-header">
+                <h2>Micro Goals</h2>
+                <button class="toggle-btn" id="toggle-micro-goals"><i class="fas fa-chevron-up"></i></button>
+            </div>
+            <div id="micro-goals-content">
+                <p class="section-intro">Small, achievable actions when you're feeling overwhelmed:</p>
                 <div class="micro-goals-list" id="micro-goals-list">
-                    <div class="micro-goal">
-                        <input type="checkbox" id="water-goal" class="micro-checkbox">
-                        <label for="water-goal">Drink a glass of water</label>
-                    </div>
-                    <div class="micro-goal">
-                        <input type="checkbox" id="window-goal" class="micro-checkbox">
-                        <label for="window-goal">Look out a window for 30 seconds</label>
-                    </div>
-                    <div class="micro-goal">
-                        <input type="checkbox" id="stretch-goal" class="micro-checkbox">
-                        <label for="stretch-goal">Stretch for 10 seconds</label>
-                    </div>
+                    <!-- Will be populated by JavaScript -->
                 </div>
-                <button id="refresh-micro-goals" class="subtle-btn">Refresh these goals</button>
-            </section>
+                <button class="subtle-btn" id="more-goals-btn">Generate new goals</button>
+            </div>
+        </section>
 
-            <section class="mood-tracker">
-                <h2>How Are You Really Feeling?</h2>
-                <p class="section-intro">No judgment. Just awareness.</p>
+        <section class="section mood-tracker">
+            <div class="section-header">
+                <h2>Mood Check-in</h2>
+                <button class="toggle-btn" id="toggle-mood"><i class="fas fa-chevron-up"></i></button>
+            </div>
+            <div id="mood-content">
+                <p class="section-intro">How are you feeling right now?</p>
                 <div class="mood-options">
-                    <button class="mood-btn" data-mood="1"><i class="far fa-sad-tear"></i></button>
-                    <button class="mood-btn" data-mood="2"><i class="far fa-meh"></i></button>
-                    <button class="mood-btn" data-mood="3"><i class="far fa-smile"></i></button>
-                    <button class="mood-btn" data-mood="4"><i class="far fa-grin-stars"></i></button>
+                    <button class="mood-btn" data-mood="1">😔</button>
+                    <button class="mood-btn" data-mood="2">😐</button>
+                    <button class="mood-btn" data-mood="3">🙂</button>
+                    <button class="mood-btn" data-mood="4">😊</button>
                 </div>
-                <div class="mood-message" id="mood-message"></div>
-            </section>
+                <div id="mood-message" class="mood-message">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
 
-            <section class="daily-tasks">
-                <div class="section-header">
-                    <h2>Daily Activities</h2>
-                    <button id="toggle-tasks" class="toggle-btn"><i class="fas fa-chevron-down"></i></button>
+        <section class="section daily-tasks">
+            <div class="section-header">
+                <h2>Daily Tasks</h2>
+                <button class="toggle-btn" id="toggle-tasks"><i class="fas fa-chevron-up"></i></button>
+            </div>
+            <div id="tasks-content">
+                <p class="section-intro">Break down your day into manageable tasks:</p>
+                <div class="task-input-container">
+                    <input type="text" id="task-input" placeholder="Add a small task...">
+                    <button id="add-task-btn"><i class="fas fa-plus"></i></button>
                 </div>
-                <div id="tasks-content">
-                    <p class="section-intro">These can be as small as you need them to be.</p>
-                    <div class="task-input-container">
-                        <input type="text" id="task-input" placeholder="What's one small thing you could try today?">
-                        <button id="add-task-btn"><i class="fas fa-plus"></i></button>
-                    </div>
-                    <ul id="task-list" class="task-list"></ul>
-                </div>
-            </section>
+                <ul class="task-list" id="task-list">
+                    <!-- Will be populated by JavaScript -->
+                </ul>
+            </div>
+        </section>
 
-            <section class="dashboard">
+        <section class="section dashboard">
+            <div class="section-header">
+                <h2>Your Journey</h2>
+                <button class="toggle-btn" id="toggle-dashboard"><i class="fas fa-chevron-up"></i></button>
+            </div>
+            <div id="dashboard-content">
                 <div class="streak-container">
-                    <h2>Your Journey</h2>
-                    <p class="streak-label">Days you've opened this app</p>
-                    <div class="streak-counter" id="streak-counter">0</div>
-                    <p class="streak-message">Every day counts, even if all you did was show up.</p>
+                    <span id="streak-counter" class="streak-counter">0</span>
+                    <span class="streak-label">Day Streak</span>
                 </div>
-            </section>
+                <p id="streak-message" class="streak-message">
+                    Every day you check in adds to your streak. Keep it going!
+                </p>
+            </div>
+        </section>
 
-            <section class="reflection">
-                <div class="section-header">
-                    <h2>A Moment of Reflection</h2>
-                    <button id="toggle-reflection" class="toggle-btn"><i class="fas fa-chevron-down"></i></button>
+        <section class="section reflection">
+            <div class="section-header">
+                <h2>Daily Reflection</h2>
+                <button class="toggle-btn" id="toggle-reflection"><i class="fas fa-chevron-up"></i></button>
+            </div>
+            <div id="reflection-content">
+                <p class="section-intro">Take a moment to reflect on your day:</p>
+                <div id="reflection-question">
+                    <!-- Will be populated by JavaScript -->
                 </div>
-                <div id="reflection-content">
-                    <p class="section-intro">There's no right or wrong answer. Just honesty.</p>
-                    <div class="reflection-prompt">
-                        <p id="reflection-question">What small thing caught your attention today?</p>
-                        <textarea id="reflection-answer" placeholder="Even 'nothing' is a valid answer..."></textarea>
-                        <button id="save-reflection-btn">Save</button>
-                    </div>
-                </div>
-            </section>
+                <textarea id="reflection-answer" placeholder="Your thoughts..."></textarea>
+                <button id="save-reflection-btn">Save Reflection</button>
+                <button id="view-journal-btn" class="subtle-btn">View Previous Reflections</button>
+            </div>
+        </section>
 
-            <section class="motivation">
-                <h2>A Gentle Reminder</h2>
+        <section class="section motivation">
+            <div class="section-header">
+                <h2>Motivation</h2>
+                <button class="toggle-btn" id="toggle-motivation"><i class="fas fa-chevron-up"></i></button>
+            </div>
+            <div id="motivation-content">
                 <div class="quote-container">
-                    <p id="quote">"The path to change starts with forgiveness for yesterday and a tiny step today."</p>
+                    <div id="quote">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
                     <button id="new-quote-btn">New Reminder</button>
                 </div>
-            </section>
-        </main>
-
-        <footer>
-            <p>One moment at a time. One day at a time.</p>
-            <nav>
-                <a href="#" id="show-journal"><i class="fas fa-book"></i> Your Words</a>
-                <a href="#" id="show-why"><i class="fas fa-seedling"></i> Why This Helps</a>
-                <a href="#" id="show-settings"><i class="fas fa-cog"></i> Settings</a>
-            </nav>
-        </footer>
+            </div>
+        </section>
     </div>
 
+    <footer>
+        <p>MotivateMe - A tool for when motivation is low</p>
+        <nav>
+            <a href="#" id="settings-link">Settings</a>
+            <a href="#" id="why-this-works-link">Why This Works</a>
+            <a href="#" id="about-link">About</a>
+        </nav>
+    </footer>
+
+    <!-- Modal -->
     <div id="modal" class="modal hidden">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <div id="modal-body"></div>
+            <span class="close-modal" id="close-modal">&times;</span>
+            <div id="modal-content">
+                <!-- Will be populated by JavaScript -->
+            </div>
         </div>
     </div>
 
