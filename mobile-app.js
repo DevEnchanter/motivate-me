@@ -962,6 +962,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Bind all event listeners
     function bindEvents() {
+        // Prevent default on all tab navigation links
+        document.querySelectorAll('a[href="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+            });
+        });
+
         // Mood tracking
         bindQueryEvent('.mood-btn', 'click', (e) => {
             recordMood(e.currentTarget.dataset.mood);
@@ -990,9 +997,18 @@ document.addEventListener('DOMContentLoaded', function() {
         bindEvent('save-reminder', 'click', saveReminder);
         
         // Modal
-        bindEvent('show-journal', 'click', showJournal);
-        bindEvent('show-why', 'click', showWhy);
-        bindEvent('show-settings', 'click', showSettings);
+        bindEvent('show-journal', 'click', function(e) {
+            e.preventDefault();
+            showJournal();
+        });
+        bindEvent('show-why', 'click', function(e) {
+            e.preventDefault();
+            showWhy();
+        });
+        bindEvent('show-settings', 'click', function(e) {
+            e.preventDefault();
+            showSettings();
+        });
         bindEvent('close-modal', 'click', closeModal);
     }
     
