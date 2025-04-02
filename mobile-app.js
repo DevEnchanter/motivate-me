@@ -629,6 +629,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!modal || !modalTitle || !modalBody) return;
         
+        // Store current scroll position before opening modal
+        window._scrollPosition = window.scrollY;
+        
         modalTitle.textContent = title;
         modalBody.innerHTML = content;
         
@@ -637,11 +640,23 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function closeModal() {
         const modal = getElement('modal');
-        if (modal) modal.classList.add('hidden');
+        if (modal) {
+            modal.classList.add('hidden');
+            
+            // Restore scroll position after closing modal
+            if (window._scrollPosition !== undefined) {
+                setTimeout(() => {
+                    window.scrollTo(0, window._scrollPosition);
+                }, 10);
+            }
+        }
     }
     
     // Journal view
-    function showJournal() {
+    function showJournal(e) {
+        // Prevent default if event is passed
+        if (e && e.preventDefault) e.preventDefault();
+        
         if (appData.reflections.length === 0) {
             openModal('Your Words', '<p>Nothing here yet. When you save a reflection, your words will appear here.</p>');
             return;
@@ -672,7 +687,10 @@ document.addEventListener('DOMContentLoaded', function() {
         openModal('Your Words', content);
     }
     
-    function showWhy() {
+    function showWhy(e) {
+        // Prevent default if event is passed
+        if (e && e.preventDefault) e.preventDefault();
+        
         const content = `
             <div class="why-section">
                 <p>Taking small steps helps break negative thought patterns and builds momentum.</p>
@@ -686,7 +704,10 @@ document.addEventListener('DOMContentLoaded', function() {
         openModal('Why This Helps', content);
     }
     
-    function showSettings() {
+    function showSettings(e) {
+        // Prevent default if event is passed
+        if (e && e.preventDefault) e.preventDefault();
+        
         const content = `
             <div class="settings-form">
                 <div class="setting-item">
@@ -717,7 +738,9 @@ document.addEventListener('DOMContentLoaded', function() {
         openModal('Settings', content);
         
         // Bind events for settings form
-        bindEvent('save-settings', 'click', () => {
+        bindEvent('save-settings', 'click', (e) => {
+            if (e && e.preventDefault) e.preventDefault();
+            
             const themeSelect = getElement('theme-select');
             const notificationsToggle = getElement('notifications-toggle');
             
@@ -736,7 +759,9 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification('Settings Saved', 'Your settings have been updated');
         });
         
-        bindEvent('reset-data', 'click', () => {
+        bindEvent('reset-data', 'click', (e) => {
+            if (e && e.preventDefault) e.preventDefault();
+            
             if (confirm('Are you sure you want to reset all your data? This cannot be undone.')) {
                 appData = {
                     tasks: [],
@@ -964,15 +989,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Modal
         bindEvent('show-journal', 'click', function(e) {
             e.preventDefault();
-            showJournal();
+            showJournal(e);
         });
         bindEvent('show-why', 'click', function(e) {
             e.preventDefault();
-            showWhy();
+            showWhy(e);
         });
         bindEvent('show-settings', 'click', function(e) {
             e.preventDefault();
-            showSettings();
+            showSettings(e);
         });
         bindEvent('close-modal', 'click', closeModal);
     }
