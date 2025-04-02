@@ -521,6 +521,43 @@
                 </section>
                 
                 <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">Your Journey</h2>
+                    </div>
+                    <div class="card">
+                        <div class="stats-row">
+                            <div class="stat-item">
+                                <span class="stat-label">Classic Streak</span>
+                                <span id="streak-counter" class="stat-value">0</span>
+                                <span class="stat-desc">days in a row</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Resilient Streak</span>
+                                <span id="soft-streak-counter" class="stat-value">0</span>
+                                <span class="stat-desc">with grace for gaps</span>
+                            </div>
+                        </div>
+                        <div id="streak-message" class="gentle-message" style="display: none;">
+                            You missed a day, but that's okay! Your progress still counts.
+                        </div>
+                        <div class="growth-visual">
+                            <div id="growth-indicator" class="growth-tree"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Add Tiny Wins section -->
+                <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">Tiny Wins</h2>
+                        <div class="section-subtitle">Every small step matters</div>
+                    </div>
+                    <div id="tiny-wins-container" class="card">
+                        <p class="text-muted">No tiny wins recorded today yet. Every small action counts!</p>
+                    </div>
+                </section>
+                
+                <section class="section">
                     <h3>Micro Goals - Small Wins</h3>
                     <div class="micro-goals">
                         <div id="micro-goals-list">
@@ -553,9 +590,25 @@
             
             <div id="tasks-tab" class="tab-content" style="display: none;">
                 <section class="section">
+                    <div class="energy-level-selector">
+                        <span class="energy-label">Today's energy level:</span>
+                        <div class="energy-buttons">
+                            <button class="energy-btn" data-level="low">Low</button>
+                            <button class="energy-btn" data-level="medium">Medium</button>
+                            <button class="energy-btn" data-level="high">High</button>
+                        </div>
+                    </div>
+                    <div id="energy-suggestions" class="energy-suggestions">
+                        <!-- Suggestions will be added by JavaScript -->
+                    </div>
+                </section>
+                <section class="section">
                     <div class="task-form">
-                        <input type="text" id="task-input" class="task-input" placeholder="Add a small, manageable task...">
-                        <button id="add-task-btn" class="add-task-btn"><i class="fas fa-plus"></i></button>
+                        <div class="task-header">
+                            <input type="text" id="task-input" placeholder="Enter a task..." class="task-input">
+                            <button id="add-task-btn" class="btn">Add</button>
+                            <button id="struggling-btn" class="btn secondary">I'm Struggling</button>
+                        </div>
                     </div>
                     <ul id="task-list" class="task-list">
                         <!-- Tasks will be populated by JavaScript -->
@@ -616,6 +669,15 @@
                                 </div>
                             </div>
                             
+                            <div class="form-group">
+                                <label>Reminder Tone</label>
+                                <select id="reminder-tone">
+                                    <option value="supportive">Supportive & Gentle</option>
+                                    <option value="neutral">Neutral & Factual</option>
+                                    <option value="direct">Direct & Action-Focused</option>
+                                </select>
+                            </div>
+                            
                             <button type="button" id="save-reminder" class="btn">Save Reminder</button>
                         </form>
                     </div>
@@ -657,6 +719,25 @@
                         <p>Remember: Progress isn't always visible, but each small action creates change beneath the surface.</p>
                     </div>
                     <button id="show-why" class="btn secondary">Why This Helps</button>
+                </section>
+                
+                <section class="section">
+                    <h3>Interface Settings</h3>
+                    <div class="form-group">
+                        <label for="interface-mode">Display Mode</label>
+                        <select id="interface-mode">
+                            <option value="minimal">Minimal - Less to process</option>
+                            <option value="standard" selected>Standard - Balanced view</option>
+                            <option value="detailed">Detailed - More information</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="hide-metrics">
+                            <label for="hide-metrics">Hide numbers and metrics</label>
+                        </div>
+                    </div>
+                    <button id="save-interface" class="btn">Save Interface Settings</button>
                 </section>
                 
                 <section class="section">

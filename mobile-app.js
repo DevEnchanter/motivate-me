@@ -5,8 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Constants
     const STORAGE_KEY = 'motivateMeData';
     const REMINDERS_KEY = 'motivateMeReminders';
+    const TINY_WINS_KEY = 'motivateMeTinyWins';
     
-    // App state
+    // Enhanced App state
     let appData = {
         tasks: [],
         streak: 0,
@@ -14,14 +15,25 @@ document.addEventListener('DOMContentLoaded', function() {
         moods: [],
         reflections: [],
         completedMicroGoals: [],
+        tinyWins: [],
+        softStreak: {
+            count: 0,
+            lastUpdate: null,
+            missedDays: 0
+        },
         settings: {
             theme: 'auto', // auto, light, dark
             notifications: true,
-            username: 'Friend'
+            username: 'Friend',
+            reminderTone: 'supportive', // supportive, neutral, direct
+            interfaceMode: 'standard', // minimal, standard, detailed
+            hideMetrics: false,
+            energyLevel: 'medium' // low, medium, high
         }
     };
     
     let reminders = [];
+    let tinyWins = [];
     
     // DOM Utility functions
     function getElement(id) {
@@ -55,12 +67,32 @@ document.addEventListener('DOMContentLoaded', function() {
             if (saved) {
                 appData = JSON.parse(saved);
                 console.log("App data loaded successfully");
+                
+                // Migration for new fields
+                if (!appData.tinyWins) appData.tinyWins = [];
+                if (!appData.softStreak) {
+                    appData.softStreak = {
+                        count: appData.streak || 0,
+                        lastUpdate: appData.lastActive,
+                        missedDays: 0
+                    };
+                }
+                if (!appData.settings.reminderTone) appData.settings.reminderTone = 'supportive';
+                if (!appData.settings.interfaceMode) appData.settings.interfaceMode = 'standard';
+                if (!appData.settings.hideMetrics) appData.settings.hideMetrics = false;
+                if (!appData.settings.energyLevel) appData.settings.energyLevel = 'medium';
             }
             
             const savedReminders = localStorage.getItem(REMINDERS_KEY);
             if (savedReminders) {
                 reminders = JSON.parse(savedReminders);
                 console.log("Reminders loaded successfully");
+            }
+            
+            const savedTinyWins = localStorage.getItem(TINY_WINS_KEY);
+            if (savedTinyWins) {
+                tinyWins = JSON.parse(savedTinyWins);
+                console.log("Tiny wins loaded successfully");
             }
         } catch (e) {
             console.error("Error loading data:", e);
@@ -83,10 +115,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    function saveTinyWins() {
+        try {
+            localStorage.setItem(TINY_WINS_KEY, JSON.stringify(tinyWins));
+        } catch (e) {
+            console.error("Error saving tiny wins:", e);
+        }
+    }
+    
     // Tab Navigation
     function setupTabs() {
         // This function is now disabled as tab navigation is handled by inline script
-        // Keep this as a placeholder to avoid errors when it's called from init
         console.log("Tab navigation is now handled by inline script");
         
         // Note: This function is intentionally left empty to avoid conflicts with
@@ -110,15 +149,30 @@ document.addEventListener('DOMContentLoaded', function() {
             const activeButton = document.querySelector(`.mood-btn[data-mood="${todaysMood.value}"]`);
             if (activeButton) activeButton.classList.add('active');
             
-            // Set message
+            // Set message based on reminder tone preference
             const messages = {
-                '1': "It's okay to not be okay. Your feelings are valid.",
-                '2': "Neutral days are part of life too. You're doing fine.",
-                '3': "That's great! Small moments of joy matter.",
-                '4': "Wonderful! Remember this feeling."
+                supportive: {
+                    '1': "It's completely okay to feel down. Your feelings are valid and important.",
+                    '2': "Neutral days are part of the journey too. You're doing just fine.",
+                    '3': "That's wonderful! Even small moments of joy matter so much.",
+                    '4': "Brilliant! Remember this feeling - you created this moment."
+                },
+                neutral: {
+                    '1': "You've recorded feeling down today.",
+                    '2': "You've recorded feeling neutral today.",
+                    '3': "You've recorded feeling good today.",
+                    '4': "You've recorded feeling great today."
+                },
+                direct: {
+                    '1': "You're feeling down. What small thing might help?",
+                    '2': "You're feeling neutral. Consider one small positive action.",
+                    '3': "You're feeling good. Great time to tackle something important.",
+                    '4': "You're feeling great. Make the most of this energy."
+                }
             };
             
-            moodMessage.textContent = messages[todaysMood.value] || '';
+            const tone = appData.settings.reminderTone || 'supportive';
+            moodMessage.textContent = messages[tone][todaysMood.value] || '';
         }
     }
     
@@ -137,8 +191,61 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
+        // Record as a tiny win
+        recordTinyWin("Checked in with your mood");
+        
         saveData();
         updateMoodUI();
+    }
+    
+    // Tiny Wins Tracking
+    function recordTinyWin(description) {
+        const win = {
+            id: Date.now(),
+            date: new Date().toISOString(),
+            description: description
+        };
+        
+        tinyWins.push(win);
+        saveTinyWins();
+        
+        // Update soft streak
+        updateSoftStreak();
+        
+        return win;
+    }
+    
+    function getTinyWinsToday() {
+        const today = new Date().toDateString();
+        return tinyWins.filter(win => new Date(win.date).toDateString() === today);
+    }
+    
+    function updateTinyWinsUI() {
+        const winsContainer = getElement('tiny-wins-container');
+        if (!winsContainer) return;
+        
+        const todayWins = getTinyWinsToday();
+        
+        if (todayWins.length === 0) {
+            winsContainer.innerHTML = '<p class="text-muted">No tiny wins recorded today yet. Every small action counts!</p>';
+            return;
+        }
+        
+        winsContainer.innerHTML = '<h4>Today\'s Tiny Wins</h4>';
+        const list = document.createElement('ul');
+        list.className = 'tiny-wins-list';
+        
+        todayWins.forEach(win => {
+            const item = document.createElement('li');
+            item.className = 'tiny-win-item';
+            item.innerHTML = `
+                <span class="tiny-win-text">${win.description}</span>
+                <span class="tiny-win-time">${new Date(win.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            `;
+            list.appendChild(item);
+        });
+        
+        winsContainer.appendChild(list);
     }
     
     // Micro goals
@@ -182,6 +289,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         date: today,
                         goalText: goalText
                     });
+                    
+                    // Record as tiny win
+                    recordTinyWin(`Completed micro-goal: ${goalText}`);
                 } else {
                     // Remove from completed goals
                     appData.completedMicroGoals = appData.completedMicroGoals.filter(
@@ -207,7 +317,47 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Streak counter
+    // Soft Streak counter (more forgiving)
+    function updateSoftStreak() {
+        const today = new Date().toDateString();
+        
+        if (!appData.softStreak.lastUpdate) {
+            // First use ever
+            appData.softStreak = {
+                count: 1,
+                lastUpdate: today,
+                missedDays: 0
+            };
+        } else {
+            // Check how many days have passed
+            const lastDate = new Date(appData.softStreak.lastUpdate);
+            const todayDate = new Date(today);
+            const diffTime = Math.abs(todayDate - lastDate);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (appData.softStreak.lastUpdate !== today) {
+                if (diffDays === 1) {
+                    // Perfect - used yesterday
+                    appData.softStreak.count += 1;
+                    appData.softStreak.missedDays = 0;
+                } else if (diffDays > 1 && diffDays <= 3) {
+                    // Missed a few days but still maintain partial streak
+                    appData.softStreak.count += 0.5;
+                    appData.softStreak.missedDays = diffDays - 1;
+                } else if (diffDays > 3) {
+                    // Reset but don't go to zero - maintain some momentum
+                    appData.softStreak.count = Math.max(1, Math.floor(appData.softStreak.count * 0.5));
+                    appData.softStreak.missedDays = diffDays - 1;
+                }
+                appData.softStreak.lastUpdate = today;
+            }
+        }
+        
+        saveData();
+        updateStreakUI();
+    }
+    
+    // Streak counter (traditional)
     function updateStreak() {
         const streakCounter = getElement('streak-counter');
         if (!streakCounter) return;
@@ -239,7 +389,38 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        streakCounter.textContent = appData.streak;
+        // Also update soft streak
+        updateSoftStreak();
+    }
+    
+    // Combined streak UI update
+    function updateStreakUI() {
+        const streakCounter = getElement('streak-counter');
+        const softStreakElement = getElement('soft-streak-counter');
+        const streakMessageElement = getElement('streak-message');
+        
+        if (streakCounter) {
+            streakCounter.textContent = appData.streak;
+        }
+        
+        if (softStreakElement) {
+            // Show rounded soft streak for cleaner display
+            const roundedSoftStreak = Math.floor(appData.softStreak.count);
+            softStreakElement.textContent = roundedSoftStreak;
+        }
+        
+        if (streakMessageElement && appData.softStreak.missedDays > 0) {
+            let message = '';
+            if (appData.softStreak.missedDays === 1) {
+                message = "You missed yesterday, but that's okay! Your progress still counts.";
+            } else {
+                message = `You missed ${appData.softStreak.missedDays} days, but you're back now and that's what matters!`;
+            }
+            streakMessageElement.textContent = message;
+            streakMessageElement.style.display = 'block';
+        } else if (streakMessageElement) {
+            streakMessageElement.style.display = 'none';
+        }
     }
     
     // Tasks
@@ -254,21 +435,50 @@ document.addEventListener('DOMContentLoaded', function() {
             li.className = `task-item ${task.completed ? 'task-completed' : ''}`;
             li.dataset.id = task.id;
             
+            // Check if the task has micro-steps
+            const hasMicroSteps = task.microSteps && task.microSteps.length > 0;
+            
             li.innerHTML = `
-                <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}>
-                <span class="task-text">${task.text}</span>
-                <button class="task-delete"><i class="fas fa-trash"></i></button>
+                <div class="task-main">
+                    <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}>
+                    <span class="task-text">${task.text}</span>
+                    ${hasMicroSteps ? '<button class="task-expand-btn"><i class="fas fa-chevron-down"></i></button>' : ''}
+                    <button class="task-tiny-btn" title="Break into tiny steps"><i class="fas fa-bolt"></i></button>
+                    <button class="task-delete"><i class="fas fa-trash"></i></button>
+                </div>
+                ${hasMicroSteps ? `
+                <div class="task-micro-steps" style="display: none;">
+                    <ul class="micro-steps-list">
+                        ${task.microSteps.map((step, idx) => `
+                            <li class="micro-step ${step.completed ? 'completed' : ''}">
+                                <input type="checkbox" id="micro-step-${task.id}-${idx}" class="micro-step-checkbox" 
+                                    data-task-id="${task.id}" data-step-idx="${idx}" ${step.completed ? 'checked' : ''}>
+                                <label for="micro-step-${task.id}-${idx}">${step.text}</label>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>` : ''}
             `;
             
+            taskList.appendChild(li);
+            
+            // Add event listeners to the task
             const checkbox = li.querySelector('.task-checkbox');
             if (checkbox) {
                 checkbox.addEventListener('change', () => {
                     task.completed = !task.completed;
+                    
+                    if (task.completed) {
+                        // Record as a tiny win when completing a task
+                        recordTinyWin(`Completed task: ${task.text}`);
+                    }
+                    
                     saveData();
                     updateTasks();
                 });
             }
             
+            // Delete button
             const deleteBtn = li.querySelector('.task-delete');
             if (deleteBtn) {
                 deleteBtn.addEventListener('click', () => {
@@ -278,7 +488,57 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
             
-            taskList.appendChild(li);
+            // Expand micro-steps button
+            const expandBtn = li.querySelector('.task-expand-btn');
+            if (expandBtn) {
+                expandBtn.addEventListener('click', () => {
+                    const microStepsDiv = li.querySelector('.task-micro-steps');
+                    if (microStepsDiv) {
+                        const isHidden = microStepsDiv.style.display === 'none';
+                        microStepsDiv.style.display = isHidden ? 'block' : 'none';
+                        expandBtn.innerHTML = isHidden ? 
+                            '<i class="fas fa-chevron-up"></i>' : 
+                            '<i class="fas fa-chevron-down"></i>';
+                    }
+                });
+            }
+            
+            // Break into tiny steps button
+            const tinyBtn = li.querySelector('.task-tiny-btn');
+            if (tinyBtn) {
+                tinyBtn.addEventListener('click', () => {
+                    createMicroSteps(task.id);
+                });
+            }
+            
+            // Micro-step checkboxes
+            const microCheckboxes = li.querySelectorAll('.micro-step-checkbox');
+            microCheckboxes.forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    const taskId = e.target.dataset.taskId;
+                    const stepIdx = parseInt(e.target.dataset.stepIdx);
+                    const targetTask = appData.tasks.find(t => t.id.toString() === taskId);
+                    
+                    if (targetTask && targetTask.microSteps && targetTask.microSteps[stepIdx]) {
+                        targetTask.microSteps[stepIdx].completed = e.target.checked;
+                        
+                        if (e.target.checked) {
+                            // Record completing a micro-step as a tiny win
+                            recordTinyWin(`Completed micro-step: ${targetTask.microSteps[stepIdx].text}`);
+                            
+                            // Check if all micro-steps are completed
+                            const allCompleted = targetTask.microSteps.every(step => step.completed);
+                            if (allCompleted) {
+                                targetTask.completed = true;
+                                recordTinyWin(`Completed all micro-steps for: ${targetTask.text}`);
+                            }
+                        }
+                        
+                        saveData();
+                        updateTasks();
+                    }
+                });
+            });
         });
     }
     
@@ -289,17 +549,43 @@ document.addEventListener('DOMContentLoaded', function() {
         const text = taskInput.value.trim();
         if (text === '') return;
         
-        appData.tasks.push({
+        const newTask = {
             id: Date.now(),
             text: text,
             completed: false,
             dateAdded: new Date().toISOString()
-        });
+        };
+        
+        appData.tasks.push(newTask);
+        
+        // Record adding a task as a tiny win
+        recordTinyWin("Added a new task");
         
         saveData();
         updateTasks();
         
         taskInput.value = '';
+    }
+    
+    function createMicroSteps(taskId) {
+        const task = appData.tasks.find(t => t.id === taskId);
+        if (!task) return;
+        
+        // Only create micro-steps if they don't exist yet
+        if (!task.microSteps || task.microSteps.length === 0) {
+            // Create default micro-steps
+            task.microSteps = [
+                { text: `Just think about ${task.text.toLowerCase()}`, completed: false },
+                { text: `Gather what you need for ${task.text.toLowerCase()}`, completed: false },
+                { text: `Start ${task.text.toLowerCase()} for just 2 minutes`, completed: false }
+            ];
+            
+            saveData();
+            updateTasks();
+            
+            // Record as a tiny win
+            recordTinyWin(`Broke down task into smaller steps`);
+        }
     }
     
     // Reflection
@@ -341,6 +627,9 @@ document.addEventListener('DOMContentLoaded', function() {
             prompt: question.textContent,
             answer: text
         });
+        
+        // Record reflection as a tiny win
+        recordTinyWin("Took time to reflect");
         
         saveData();
         answer.value = '';
@@ -770,17 +1059,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     moods: [],
                     reflections: [],
                     completedMicroGoals: [],
+                    tinyWins: [],
+                    softStreak: {
+                        count: 0,
+                        lastUpdate: null,
+                        missedDays: 0
+                    },
                     settings: {
                         theme: 'auto',
                         notifications: true,
-                        username: 'Friend'
+                        username: 'Friend',
+                        reminderTone: 'supportive',
+                        interfaceMode: 'standard',
+                        hideMetrics: false,
+                        energyLevel: 'medium'
                     }
                 };
                 
                 reminders = [];
+                tinyWins = [];
                 
                 saveData();
                 saveReminders();
+                saveTinyWins();
                 initModules();
                 closeModal();
                 
@@ -913,6 +1214,254 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Energy Level Handling
+    function updateEnergyLevelUI() {
+        const energyButtons = getAllElements('.energy-btn');
+        const suggestionsContainer = getElement('energy-suggestions');
+        
+        // Remove active class from all buttons
+        energyButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Set active button based on current energy level
+        const activeButton = document.querySelector(`.energy-btn[data-level="${appData.settings.energyLevel}"]`);
+        if (activeButton) activeButton.classList.add('active');
+        
+        // Update suggestions based on energy level
+        if (suggestionsContainer) {
+            const suggestions = {
+                low: [
+                    "Focus on tiny, 2-minute tasks",
+                    "Break tasks into smaller micro-steps",
+                    "Set a timer for just 5 minutes of activity"
+                ],
+                medium: [
+                    "Try alternating between easy and challenging tasks",
+                    "Set a specific goal with a small reward after",
+                    "Work in 25-minute focused sessions"
+                ],
+                high: [
+                    "Great time to tackle more challenging tasks",
+                    "Consider batch-processing similar activities",
+                    "Set ambitious but achievable goals today"
+                ]
+            };
+            
+            const currentSuggestions = suggestions[appData.settings.energyLevel] || suggestions.medium;
+            
+            suggestionsContainer.innerHTML = `
+                <div class="suggestions-header">Suggestions for ${appData.settings.energyLevel} energy:</div>
+                <ul class="suggestions-list">
+                    ${currentSuggestions.map(s => `<li>${s}</li>`).join('')}
+                </ul>
+            `;
+        }
+    }
+    
+    function setEnergyLevel(level) {
+        appData.settings.energyLevel = level;
+        saveData();
+        updateEnergyLevelUI();
+        
+        // Record as a tiny win
+        recordTinyWin("Checked in with your energy level");
+    }
+    
+    // Struggling support
+    function showStrugglingSupport() {
+        let content = `
+            <div class="struggling-support">
+                <p>It's completely okay to struggle. Here are some options that might help:</p>
+                
+                <div class="support-options">
+                    <button id="option-break" class="support-option">
+                        <i class="fas fa-coffee"></i>
+                        <span>Take a break</span>
+                    </button>
+                    <button id="option-tiny" class="support-option">
+                        <i class="fas fa-leaf"></i>
+                        <span>Something tiny</span>
+                    </button>
+                    <button id="option-breathe" class="support-option">
+                        <i class="fas fa-wind"></i>
+                        <span>Breathing exercise</span>
+                    </button>
+                </div>
+                
+                <div id="support-content" class="support-content"></div>
+            </div>
+        `;
+        
+        openModal('I\'m Struggling', content);
+        
+        // Bind events to options
+        bindEvent('option-break', 'click', () => {
+            const supportContent = getElement('support-content');
+            if (supportContent) {
+                supportContent.innerHTML = `
+                    <div class="break-suggestion">
+                        <p>Taking a break is a form of self-care, not giving up. Set a timer for 10 minutes and do something entirely different:</p>
+                        <ul>
+                            <li>Step outside for fresh air</li>
+                            <li>Make a cup of tea or water</li>
+                            <li>Stretch or move your body gently</li>
+                            <li>Look out a window and focus on something in nature</li>
+                        </ul>
+                        <p>After your break, decide if you want to try again or rest longer.</p>
+                    </div>
+                `;
+            }
+        });
+        
+        bindEvent('option-tiny', 'click', () => {
+            const supportContent = getElement('support-content');
+            if (supportContent) {
+                const tinyOptions = [
+                    "Write down just one sentence about how you feel",
+                    "Organize one small area of your desk",
+                    "Drink a glass of water slowly and mindfully",
+                    "Identify the smallest possible step toward your goal",
+                    "Set a timer and work for just 2 minutes"
+                ];
+                
+                const randomOption = tinyOptions[Math.floor(Math.random() * tinyOptions.length)];
+                
+                supportContent.innerHTML = `
+                    <div class="tiny-suggestion">
+                        <p>When you're struggling, tiny actions create momentum:</p>
+                        <div class="suggested-action">${randomOption}</div>
+                        <button id="another-tiny" class="btn small">Another suggestion</button>
+                        <button id="record-tiny-win" class="btn small">I did this!</button>
+                    </div>
+                `;
+                
+                bindEvent('another-tiny', 'click', () => {
+                    let newOption = randomOption;
+                    while (newOption === randomOption) {
+                        newOption = tinyOptions[Math.floor(Math.random() * tinyOptions.length)];
+                    }
+                    
+                    const actionDiv = document.querySelector('.suggested-action');
+                    if (actionDiv) actionDiv.textContent = newOption;
+                });
+                
+                bindEvent('record-tiny-win', 'click', () => {
+                    const action = document.querySelector('.suggested-action');
+                    if (action) {
+                        recordTinyWin(action.textContent);
+                        closeModal();
+                        showNotification('Tiny Win Recorded', 'Great job taking a small step forward!');
+                    }
+                });
+            }
+        });
+        
+        bindEvent('option-breathe', 'click', () => {
+            const supportContent = getElement('support-content');
+            if (supportContent) {
+                supportContent.innerHTML = `
+                    <div class="breathing-exercise">
+                        <div class="breathing-circle"></div>
+                        <div class="breathing-text">Breathe in... and out...</div>
+                        <p>Continue for 30 seconds, focusing only on your breath</p>
+                    </div>
+                `;
+                
+                // Record as a tiny win after 30 seconds
+                setTimeout(() => {
+                    recordTinyWin("Took time for a breathing exercise");
+                    
+                    supportContent.innerHTML += `
+                        <div class="breathing-complete">
+                            <p>Well done! How do you feel now?</p>
+                            <div class="breathing-buttons">
+                                <button id="breathing-better" class="btn small">A bit better</button>
+                                <button id="breathing-same" class="btn small">About the same</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    bindEvent('breathing-better', 'click', () => {
+                        closeModal();
+                        showNotification('Great job', 'Remember you can return to your breath anytime.');
+                    });
+                    
+                    bindEvent('breathing-same', 'click', () => {
+                        closeModal();
+                        showNotification('That\'s okay', 'It\'s perfectly fine to still feel the same. You still took care of yourself.');
+                    });
+                }, 30000); // 30 seconds
+            }
+        });
+    }
+    
+    // Interface settings
+    function updateInterfaceMode() {
+        const appContainer = document.querySelector('.app-container');
+        if (!appContainer) return;
+        
+        // Remove existing mode classes
+        appContainer.classList.remove('mode-minimal', 'mode-standard', 'mode-detailed');
+        
+        // Add new mode class
+        appContainer.classList.add(`mode-${appData.settings.interfaceMode}`);
+        
+        // Handle metrics visibility
+        document.body.classList.toggle('hide-metrics', appData.settings.hideMetrics);
+        
+        // Apply specific interface adjustments
+        const sections = document.querySelectorAll('section');
+        
+        switch (appData.settings.interfaceMode) {
+            case 'minimal':
+                sections.forEach(section => {
+                    const header = section.querySelector('.section-header');
+                    const subtitle = section.querySelector('.section-subtitle');
+                    
+                    if (header) header.style.marginBottom = '0.25rem';
+                    if (subtitle) subtitle.style.display = 'none';
+                });
+                break;
+                
+            case 'detailed':
+                sections.forEach(section => {
+                    const header = section.querySelector('.section-header');
+                    const subtitle = section.querySelector('.section-subtitle');
+                    
+                    if (header) header.style.marginBottom = '0.75rem';
+                    if (subtitle) subtitle.style.display = 'block';
+                });
+                break;
+                
+            // Standard mode is default
+            default:
+                sections.forEach(section => {
+                    const header = section.querySelector('.section-header');
+                    const subtitle = section.querySelector('.section-subtitle');
+                    
+                    if (header) header.style.marginBottom = '0.5rem';
+                    if (subtitle) subtitle.style.display = 'block';
+                });
+        }
+    }
+    
+    function saveInterfaceSettings() {
+        const interfaceMode = getElement('interface-mode');
+        const hideMetrics = getElement('hide-metrics');
+        
+        if (interfaceMode) {
+            appData.settings.interfaceMode = interfaceMode.value;
+        }
+        
+        if (hideMetrics) {
+            appData.settings.hideMetrics = hideMetrics.checked;
+        }
+        
+        saveData();
+        updateInterfaceMode();
+        
+        showNotification('Settings Updated', 'Your interface preferences have been saved.');
+    }
+    
     // Initialize everything
     function init() {
         console.log("Initializing MotivateMe mobile app...");
@@ -928,6 +1477,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Apply theme
         applyTheme();
+        
+        // Apply interface mode
+        updateInterfaceMode();
         
         // Setup tabs
         setupTabs();
@@ -964,6 +1516,11 @@ document.addEventListener('DOMContentLoaded', function() {
             recordMood(e.currentTarget.dataset.mood);
         });
         
+        // Energy level
+        bindQueryEvent('.energy-btn', 'click', (e) => {
+            setEnergyLevel(e.currentTarget.dataset.level);
+        });
+        
         // Micro goals
         bindEvent('refresh-micro-goals', 'click', () => {
             const goalsList = getElement('micro-goals-list');
@@ -977,6 +1534,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (e.key === 'Enter') addTask();
         });
         
+        // Struggling support
+        bindEvent('struggling-btn', 'click', (e) => {
+            e.preventDefault();
+            showStrugglingSupport();
+        });
+        
         // Reflection
         bindEvent('save-reflection-btn', 'click', saveReflection);
         
@@ -985,6 +1548,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Reminders
         bindEvent('save-reminder', 'click', saveReminder);
+        
+        // Interface settings
+        bindEvent('save-interface', 'click', saveInterfaceSettings);
         
         // Modal
         bindEvent('show-journal', 'click', function(e) {
@@ -1012,6 +1578,8 @@ document.addEventListener('DOMContentLoaded', function() {
         updateQuote();
         updateRemindersUI();
         setupReminderHandler();
+        updateTinyWinsUI();
+        updateEnergyLevelUI();
     }
     
     // Start the app

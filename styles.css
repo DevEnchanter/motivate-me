@@ -725,3 +725,240 @@ footer a:hover {
         gap: 1rem;
     }
 }
+
+/* Tiny Wins Styles */
+.tiny-wins-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tiny-win-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tiny-win-item:last-child {
+    border-bottom: none;
+}
+
+.tiny-win-text {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.tiny-win-time {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 1rem;
+}
+
+/* Journey and Streaks */
+.stats-row {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.stat-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.gentle-message {
+    background-color: rgba(253, 203, 110, 0.2);
+    border-left: 3px solid var(--warning-color);
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #7d5700;
+}
+
+.growth-visual {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.growth-tree {
+    width: 100px;
+    height: 100px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2300b894"><path d="M12,2l-5.5,9h11L12,2z M12,5.86l2.29,3.14H9.71L12,5.86z M17.5,22h-11l5.5-9L17.5,22z M7.42,20h9.16L12,15.05L7.42,20z"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Energy Level Selector */
+.energy-level-selector {
+    margin-bottom: 1rem;
+}
+
+.energy-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.energy-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.energy-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.energy-btn[data-level="low"] {
+    border-color: #e17055;
+    color: #e17055;
+}
+
+.energy-btn[data-level="medium"] {
+    border-color: #fdcb6e;
+    color: #fdcb6e;
+}
+
+.energy-btn[data-level="high"] {
+    border-color: #00b894;
+    color: #00b894;
+}
+
+.energy-btn.active[data-level="low"] {
+    background-color: #e17055;
+    color: white;
+}
+
+.energy-btn.active[data-level="medium"] {
+    background-color: #fdcb6e;
+    color: white;
+}
+
+.energy-btn.active[data-level="high"] {
+    background-color: #00b894;
+    color: white;
+}
+
+.energy-suggestions {
+    background-color: rgba(108, 92, 231, 0.05);
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Task enhancements */
+.task-header {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.task-input {
+    flex: 1;
+}
+
+.task-main {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.task-tiny-btn, 
+.task-expand-btn {
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    cursor: pointer;
+    padding: 0.25rem;
+    margin-left: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.task-tiny-btn:hover, 
+.task-expand-btn:hover {
+    background-color: rgba(108, 92, 231, 0.1);
+    color: var(--primary-color);
+}
+
+.task-micro-steps {
+    margin-left: 2rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
+    border-left: 2px solid rgba(108, 92, 231, 0.2);
+}
+
+.micro-steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.micro-step {
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+.micro-step.completed label {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.micro-step-checkbox {
+    margin-right: 0.5rem;
+}
+
+/* Struggling button */
+.btn.secondary {
+    background-color: #a29bfe;
+}
+
+.btn.secondary:hover {
+    background-color: #8c7ae6;
+}
+
+/* Interface settings */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
