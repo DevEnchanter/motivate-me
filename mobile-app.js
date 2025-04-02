@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Click handler for tabs
         function handleTabClick(e) {
+            e.preventDefault(); // Prevent default link behavior that causes scroll
             const tabName = e.currentTarget.dataset.tab;
             activateTab(tabName);
         }
@@ -249,8 +250,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const today = new Date().toDateString();
         
         if (!appData.lastActive) {
+            // Initialize on first use with streak of 1
             appData.lastActive = today;
             appData.streak = 1;
+            saveData(); // Save immediately to ensure the initial value is stored
         } else {
             // Check if last active was yesterday
             const lastDate = new Date(appData.lastActive);
@@ -267,11 +270,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     appData.streak = 1;
                 }
                 appData.lastActive = today;
+                saveData(); // Save changes after updating streak
             }
         }
         
         streakCounter.textContent = appData.streak;
-        saveData();
     }
     
     // Tasks
@@ -926,6 +929,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Load saved data
         loadData();
+        
+        // Ensure streak is at least 1 on first use
+        if (!appData.streak || appData.streak < 1) {
+            appData.streak = 1;
+            saveData();
+        }
         
         // Apply theme
         applyTheme();
