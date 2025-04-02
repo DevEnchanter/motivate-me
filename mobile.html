@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6c5ce7">
+    <title>MotivateMe</title>
+    <link rel="manifest" href="manifest.json">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #f8f9fe;
+            --card-color: #ffffff;
+            --text-color: #2d3436;
+            --text-muted: #636e72;
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --accent-color: #fd79a8;
+            --success-color: #00b894;
+            --border-color: #dfe6e9;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 12px;
+            min-height: 100vh;
+            overscroll-behavior-y: contain;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .app-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .app-title {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .app-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+        
+        .section {
+            background-color: var(--card-color);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--text-muted);
+            padding: 5px;
+        }
+        
+        .toggle-btn:hover {
+            color: var(--primary-color);
+        }
+        
+        /* Styles for reminder notification */
+        .notification {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+        }
+        
+        .notification-actions {
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .notification-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        /* Bottom nav bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 900;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.7rem;
+            padding: 8px 0;
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        
+        /* Main content area - adjusted for bottom nav */
+        .main-content {
+            padding-bottom: 70px;
+        }
+        
+        /* Reminder setup */
+        .reminder-setup {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.02);
+            border-radius: 8px;
+        }
+        
+        .reminder-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .reminder-form label {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .reminder-form select, 
+        .reminder-form input {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        /* Additional mobile-friendly styles */
+        .btn {
+            padding: 10px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+            width: 100%;
+            margin-top: 5px;
+        }
+        
+        .btn:hover, .btn:active {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn.secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn.secondary:hover, .btn.secondary:active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        /* Mood tracker */
+        .mood-tracker {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .mood-buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .mood-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        
+        .mood-btn:hover, .mood-btn:active {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .mood-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .mood-emoji {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+        }
+        
+        .mood-label {
+            font-size: 0.8rem;
+        }
+        
+        .mood-message {
+            text-align: center;
+            font-style: italic;
+            color: var(--text-muted);
+            min-height: 2.4em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            margin: 0 -16px 12px -16px;
+            padding: 0 16px;
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none; /* Chrome, Safari */
+        }
+        
+        .tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            margin-right: 8px;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+        
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Other sections */
+        .task-form {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .task-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px 0 0 6px;
+            font-size: 16px; /* Better for touch */
+        }
+        
+        .add-task-btn {
+            padding: 12px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .task-checkbox {
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: var(--success-color);
+            width: 20px; /* Larger for touch */
+            height: 20px;
+        }
+        
+        .reflection-answer {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            resize: none;
+            font-family: inherit;
+            font-size: 16px; /* Better for touch */
+        }
+        
+        /* Mobile optimized modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* Bottom sheet style */
+            z-index: 1000;
+        }
+        
+        .modal.hidden {
+            display: none;
+        }
+        
+        .modal-container {
+            background-color: var(--card-color);
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .modal-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            line-height: 1;
+        }
+        
+        .modal-body {
+            padding: 15px;
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #1a1a2e;
+                --card-color: #16213e;
+                --text-color: #e6e6e6;
+                --text-muted: #a0a0a0;
+                --border-color: #2a2a4a;
+            }
+        }
+        
+        /* Install prompt */
+        .install-prompt {
+            background-color: var(--card-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--secondary-color);
+        }
+        
+        .install-message {
+            flex: 1;
+        }
+        
+        .install-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .install-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        .install-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-left: 15px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1 class="app-title">MotivateMe</h1>
+            <p class="app-subtitle">Take small steps, one moment at a time</p>
+        </header>
+        
+        <div id="install-prompt" class="install-prompt" style="display: none;">
+            <div class="install-message">
+                <div class="install-title">Add to Home Screen</div>
+                <div class="install-description">Install this app for quick access anytime</div>
+            </div>
+            <button id="install-btn" class="install-btn">Install</button>
+        </div>
+        
+        <div class="main-content">
+            <div class="tabs">
+                <button class="tab active" data-tab="today">Today</button>
+                <button class="tab" data-tab="tasks">Tasks</button>
+                <button class="tab" data-tab="reflect">Reflect</button>
+                <button class="tab" data-tab="reminders">Reminders</button>
+                <button class="tab" data-tab="help">Help</button>
+            </div>
+            
+            <!-- Tab Content -->
+            <div id="today-tab" class="tab-content">
+                <section class="section">
+                    <div class="mood-tracker">
+                        <h3>How are you feeling right now?</h3>
+                        <div class="mood-buttons">
+                            <button class="mood-btn" data-mood="1">
+                                <span class="mood-emoji">😔</span>
+                                <span class="mood-label">Low</span>
+                            </button>
+                            <button class="mood-btn" data-mood="2">
+                                <span class="mood-emoji">😐</span>
+                                <span class="mood-label">Neutral</span>
+                            </button>
+                            <button class="mood-btn" data-mood="3">
+                                <span class="mood-emoji">🙂</span>
+                                <span class="mood-label">Okay</span>
+                            </button>
+                            <button class="mood-btn" data-mood="4">
+                                <span class="mood-emoji">😊</span>
+                                <span class="mood-label">Good</span>
+                            </button>
+                        </div>
+                        <div id="mood-message" class="mood-message"></div>
+                    </div>
+                </section>
+                
+                <section class="section">
+                    <h3>Micro Goals - Small Wins</h3>
+                    <div class="micro-goals">
+                        <div id="micro-goals-list">
+                            <!-- Micro goals will be populated by JavaScript -->
+                        </div>
+                        <div class="micro-actions">
+                            <button id="refresh-micro-goals" class="btn secondary">New Goals</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="section">
+                    <div class="dashboard">
+                        <div class="streak-container">
+                            <span id="streak-counter" class="streak-counter">0</span>
+                            <span class="streak-label">Day Streak</span>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="section">
+                    <div class="motivation">
+                        <div id="quote" class="quote">
+                            <!-- Quote will be populated by JavaScript -->
+                        </div>
+                        <button id="new-quote-btn" class="btn secondary">New Reminder</button>
+                    </div>
+                </section>
+            </div>
+            
+            <div id="tasks-tab" class="tab-content" style="display: none;">
+                <section class="section">
+                    <div class="task-form">
+                        <input type="text" id="task-input" class="task-input" placeholder="Add a small, manageable task...">
+                        <button id="add-task-btn" class="add-task-btn"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <ul id="task-list" class="task-list">
+                        <!-- Tasks will be populated by JavaScript -->
+                    </ul>
+                </section>
+            </div>
+            
+            <div id="reflect-tab" class="tab-content" style="display: none;">
+                <section class="section">
+                    <div class="reflection">
+                        <div id="reflection-question" class="reflection-question">
+                            <!-- Question will be populated by JavaScript -->
+                        </div>
+                        <textarea id="reflection-answer" class="reflection-answer" placeholder="Your thoughts..."></textarea>
+                        <button id="save-reflection-btn" class="btn">Save</button>
+                    </div>
+                </section>
+                
+                <section class="section">
+                    <button id="show-journal" class="btn secondary">View Previous Reflections</button>
+                </section>
+            </div>
+            
+            <div id="reminders-tab" class="tab-content" style="display: none;">
+                <section class="section">
+                    <h3>Reminder Settings</h3>
+                    <div class="reminder-setup">
+                        <form class="reminder-form">
+                            <label for="reminder-type">Remind me about:</label>
+                            <select id="reminder-type">
+                                <option value="tasks">Incomplete Tasks</option>
+                                <option value="reflection">Daily Reflection</option>
+                                <option value="mood">Mood Check-in</option>
+                                <option value="motivation">Motivation Quote</option>
+                            </select>
+                            
+                            <label for="reminder-time">Time:</label>
+                            <input type="time" id="reminder-time" value="18:00">
+                            
+                            <label for="reminder-repeat">Repeat:</label>
+                            <select id="reminder-repeat">
+                                <option value="daily">Daily</option>
+                                <option value="weekdays">Weekdays</option>
+                                <option value="weekends">Weekends</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            
+                            <div id="custom-days" style="display: none;">
+                                <label>Select days:</label>
+                                <div>
+                                    <input type="checkbox" id="day-mon" checked><label for="day-mon">Mon</label>
+                                    <input type="checkbox" id="day-tue" checked><label for="day-tue">Tue</label>
+                                    <input type="checkbox" id="day-wed" checked><label for="day-wed">Wed</label>
+                                    <input type="checkbox" id="day-thu" checked><label for="day-thu">Thu</label>
+                                    <input type="checkbox" id="day-fri" checked><label for="day-fri">Fri</label>
+                                    <input type="checkbox" id="day-sat" checked><label for="day-sat">Sat</label>
+                                    <input type="checkbox" id="day-sun" checked><label for="day-sun">Sun</label>
+                                </div>
+                            </div>
+                            
+                            <button type="button" id="save-reminder" class="btn">Save Reminder</button>
+                        </form>
+                    </div>
+                </section>
+                
+                <section class="section">
+                    <h3>Active Reminders</h3>
+                    <div id="reminders-list">
+                        <!-- Reminders will be populated by JavaScript -->
+                        <p class="text-muted">No reminders set up yet</p>
+                    </div>
+                </section>
+            </div>
+            
+            <div id="help-tab" class="tab-content" style="display: none;">
+                <section class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">Emergency Help</h2>
+                    </div>
+                    <div class="emergency-help">
+                        <h3 class="emergency-title">Need immediate support?</h3>
+                        <div class="help-links">
+                            <a href="tel:988" class="help-link">988 Lifeline</a>
+                            <a href="https://www.crisistextline.org/" class="help-link" target="_blank">Crisis Text Line</a>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="section">
+                    <h3>About MotivateMe</h3>
+                    <div style="padding: 10px 0;">
+                        <p>MotivateMe helps you take small steps when feeling unmotivated. The app focuses on:</p>
+                        <ul style="padding-left: 20px; margin: 10px 0;">
+                            <li>Breaking tasks into manageable chunks</li>
+                            <li>Tracking mood patterns</li>
+                            <li>Self-reflection</li>
+                            <li>Building consistent habits</li>
+                        </ul>
+                        <p>Remember: Progress isn't always visible, but each small action creates change beneath the surface.</p>
+                    </div>
+                    <button id="show-why" class="btn secondary">Why This Helps</button>
+                </section>
+                
+                <section class="section">
+                    <button id="show-settings" class="btn">Settings</button>
+                </section>
+            </div>
+        </div>
+        
+        <!-- Notification for reminders -->
+        <div id="notification" class="notification">
+            <div id="notification-message">It's time to check in with MotivateMe</div>
+            <div class="notification-actions">
+                <button id="notification-dismiss" class="notification-btn">Dismiss</button>
+                <button id="notification-open" class="notification-btn">Open</button>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" data-tab="today">
+                <i class="fas fa-home nav-icon"></i>
+                <span>Today</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="tasks">
+                <i class="fas fa-tasks nav-icon"></i>
+                <span>Tasks</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="reflect">
+                <i class="fas fa-book nav-icon"></i>
+                <span>Reflect</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="reminders">
+                <i class="fas fa-bell nav-icon"></i>
+                <span>Reminders</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="help">
+                <i class="fas fa-question-circle nav-icon"></i>
+                <span>Help</span>
+            </a>
+        </nav>
+    </div>
+    
+    <!-- Modal -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div id="modal-title" class="modal-title">Title</div>
+                <button id="close-modal" class="close-modal">&times;</button>
+            </div>
+            <div id="modal-body" class="modal-body">
+                <!-- Modal content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+    <script src="mobile-app.js"></script>
+</body>
+</html> 

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MotivateMe - Debug Mode</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        #debug-console {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            font-family: monospace;
+            padding: 10px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        #debug-toggle {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        
+        /* Debug Console Styles */
+        .debug-console {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            font-family: monospace;
+            font-size: 14px;
+            z-index: 9999;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            border-top: 2px solid #3f3f3f;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .debug-console.minimized {
+            transform: translateY(calc(100% - 40px));
+        }
+        
+        .debug-header {
+            padding: 8px 15px;
+            background-color: #2d2d2d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3f3f3f;
+            cursor: pointer;
+        }
+        
+        .debug-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .debug-btn {
+            padding: 5px 10px;
+            background-color: #0e639c;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        
+        .debug-btn:hover {
+            background-color: #1177bb;
+        }
+        
+        .debug-select {
+            padding: 5px;
+            background-color: #3f3f3f;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        
+        .reload-btn {
+            background-color: #6b9132;
+        }
+        
+        .reload-btn:hover {
+            background-color: #7da845;
+        }
+        
+        .clear-btn {
+            background-color: #ca5010;
+        }
+        
+        .clear-btn:hover {
+            background-color: #e45a10;
+        }
+        
+        .debug-output {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .debug-tools {
+            padding: 10px 15px;
+            background-color: #252525;
+            border-top: 1px solid #3f3f3f;
+        }
+        
+        .debug-tools h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #cccccc;
+        }
+        
+        .debug-tool-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .debug-tool-row input {
+            flex: 1;
+            padding: 5px 8px;
+            background-color: #3f3f3f;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-family: inherit;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        
+        .log-time {
+            color: #888888;
+            margin-right: 5px;
+        }
+        
+        .log-error {
+            color: #ff5555;
+        }
+        
+        .log-warn {
+            color: #ffcc00;
+        }
+        
+        .log-info {
+            color: #58a6ff;
+        }
+        
+        /* Debug Toggle Button (for smaller screens) */
+        #debug-toggle {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: #2d2d2d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 9998;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>MotivateMe (Debug Mode)</h1>
+            <p class="tagline">One small step at a time.</p>
+        </header>
+
+        <main>
+            <section class="emergency-help" id="emergency-section">
+                <div class="emergency-header">
+                    <h2>Feeling Stuck Right Now?</h2>
+                    <button id="toggle-emergency" class="toggle-btn"><i class="fas fa-chevron-down"></i></button>
+                </div>
+                <div class="emergency-content" id="emergency-content">
+                    <div class="emergency-options">
+                        <button class="emergency-btn" data-action="breathe">
+                            <i class="fas fa-wind"></i>
+                            <span>Just Breathe</span>
+                        </button>
+                        <button class="emergency-btn" data-action="tiny-task">
+                            <i class="fas fa-leaf"></i>
+                            <span>Tiny Task</span>
+                        </button>
+                        <button class="emergency-btn" data-action="kind-words">
+                            <i class="fas fa-heart"></i>
+                            <span>Kind Words</span>
+                        </button>
+                        <button class="emergency-btn" data-action="why-try">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Why Try?</span>
+                        </button>
+                    </div>
+                    <div id="emergency-display" class="emergency-display">
+                        <p>Select an option above when you're feeling overwhelmed or stuck.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="micro-goals">
+                <h2>Just For Today</h2>
+                <p class="section-intro">Start with something incredibly small. So small it seems ridiculous to say no.</p>
+                <div class="micro-goals-list" id="micro-goals-list">
+                    <!-- Micro goals will be populated here -->
+                </div>
+                <button id="refresh-micro-goals" class="subtle-btn">Refresh these goals</button>
+            </section>
+
+            <section class="mood-tracker">
+                <h2>How Are You Really Feeling?</h2>
+                <p class="section-intro">No judgment. Just awareness.</p>
+                <div class="mood-options">
+                    <button class="mood-btn" data-mood="1"><i class="far fa-sad-tear"></i></button>
+                    <button class="mood-btn" data-mood="2"><i class="far fa-meh"></i></button>
+                    <button class="mood-btn" data-mood="3"><i class="far fa-smile"></i></button>
+                    <button class="mood-btn" data-mood="4"><i class="far fa-grin-stars"></i></button>
+                </div>
+                <div class="mood-message" id="mood-message"></div>
+            </section>
+
+            <section class="daily-tasks">
+                <div class="section-header">
+                    <h2>Daily Activities</h2>
+                    <button id="toggle-tasks" class="toggle-btn"><i class="fas fa-chevron-down"></i></button>
+                </div>
+                <div id="tasks-content">
+                    <p class="section-intro">These can be as small as you need them to be.</p>
+                    <div class="task-input-container">
+                        <input type="text" id="task-input" placeholder="What's one small thing you could try today?">
+                        <button id="add-task-btn"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <ul id="task-list" class="task-list"></ul>
+                </div>
+            </section>
+
+            <section class="dashboard">
+                <div class="streak-container">
+                    <h2>Your Journey</h2>
+                    <p class="streak-label">Days you've opened this app</p>
+                    <div class="streak-counter" id="streak-counter">0</div>
+                    <p class="streak-message">Every day counts, even if all you did was show up.</p>
+                </div>
+            </section>
+
+            <section class="reflection">
+                <div class="section-header">
+                    <h2>A Moment of Reflection</h2>
+                    <button id="toggle-reflection" class="toggle-btn"><i class="fas fa-chevron-down"></i></button>
+                </div>
+                <div id="reflection-content">
+                    <p class="section-intro">There's no right or wrong answer. Just honesty.</p>
+                    <div class="reflection-prompt">
+                        <p id="reflection-question">What small thing caught your attention today?</p>
+                        <textarea id="reflection-answer" placeholder="Even 'nothing' is a valid answer..."></textarea>
+                        <button id="save-reflection-btn">Save</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="motivation">
+                <h2>A Gentle Reminder</h2>
+                <div class="quote-container">
+                    <p id="quote">"The path to change starts with forgiveness for yesterday and a tiny step today."</p>
+                    <button id="new-quote-btn">New Reminder</button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>One moment at a time. One day at a time.</p>
+            <nav>
+                <a href="#" id="show-journal"><i class="fas fa-book"></i> Your Words</a>
+                <a href="#" id="show-why"><i class="fas fa-seedling"></i> Why This Helps</a>
+                <a href="#" id="show-settings"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+        </footer>
+    </div>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <button id="debug-toggle">Debug Console</button>
+    <div id="debug-console" class="debug-console">
+        <div class="debug-header">
+            <h3>Debug Console</h3>
+            <div class="debug-controls">
+                <button id="toggle-console" class="debug-btn">Hide Console</button>
+                <select id="js-version" class="debug-select">
+                    <option value="app.js">Original (app.js)</option>
+                    <option value="fix-app.js">Fixed Version (fix-app.js)</option>
+                </select>
+                <button id="reload-page" class="debug-btn reload-btn">Reload with Selected JS</button>
+            </div>
+        </div>
+        <div class="debug-output" id="debug-output">
+            <!-- Debug messages will appear here -->
+        </div>
+        <div class="debug-tools">
+            <h4>Test Tools</h4>
+            <div class="debug-tool-row">
+                <input type="text" id="element-check" placeholder="Element ID to check">
+                <button id="check-element-btn" class="debug-btn">Check Element</button>
+            </div>
+            <div class="debug-tool-row">
+                <input type="text" id="click-sim" placeholder="Element selector to click">
+                <button id="simulate-click-btn" class="debug-btn">Simulate Click</button>
+            </div>
+            <button id="check-storage-btn" class="debug-btn">Check LocalStorage</button>
+            <button id="clear-console-btn" class="debug-btn clear-btn">Clear Console</button>
+        </div>
+    </div>
+
+    <script>
+        // Debug Console
+        (function() {
+            // Determine which JavaScript file to load
+            function loadSelectedScript() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const scriptVersion = urlParams.get('script') || 'app.js';
+                
+                // Create script element
+                const script = document.createElement('script');
+                script.src = scriptVersion;
+                document.body.appendChild(script);
+                
+                // Update the select dropdown
+                const selectElement = document.getElementById('js-version');
+                if (selectElement) {
+                    selectElement.value = scriptVersion;
+                }
+                
+                logToConsole(`📦 Loaded: ${scriptVersion}`);
+            }
+            
+            // Original console methods
+            const originalConsole = {
+                log: console.log,
+                error: console.error,
+                warn: console.warn,
+                info: console.info
+            };
+            
+            // Function to log to debug console
+            function logToConsole(message, type = 'log') {
+                const consoleOutput = document.getElementById('debug-output');
+                if (!consoleOutput) return;
+                
+                const logEntry = document.createElement('div');
+                logEntry.className = `log-entry log-${type}`;
+                
+                const timestamp = new Date().toLocaleTimeString();
+                
+                let formattedMessage = message;
+                if (typeof message === 'object') {
+                    try {
+                        formattedMessage = JSON.stringify(message, null, 2);
+                    } catch (e) {
+                        formattedMessage = message.toString();
+                    }
+                }
+                
+                logEntry.innerHTML = `<span class="log-time">${timestamp}</span> ${formattedMessage}`;
+                consoleOutput.appendChild(logEntry);
+                consoleOutput.scrollTop = consoleOutput.scrollHeight;
+                
+                // Also log to browser console
+                originalConsole[type](message);
+            }
+            
+            // Override console methods
+            console.log = function() {
+                const args = Array.from(arguments);
+                logToConsole(args.join(' '), 'log');
+            };
+            
+            console.error = function() {
+                const args = Array.from(arguments);
+                logToConsole(`❌ ERROR: ${args.join(' ')}`, 'error');
+            };
+            
+            console.warn = function() {
+                const args = Array.from(arguments);
+                logToConsole(`⚠️ WARNING: ${args.join(' ')}`, 'warn');
+            };
+            
+            console.info = function() {
+                const args = Array.from(arguments);
+                logToConsole(`ℹ️ INFO: ${args.join(' ')}`, 'info');
+            };
+            
+            // Helper methods for debugging
+            window.checkElement = function(id) {
+                const element = document.getElementById(id);
+                if (element) {
+                    console.log(`✅ Element found: #${id}`);
+                    console.log({
+                        tagName: element.tagName,
+                        classList: Array.from(element.classList),
+                        innerHTML: element.innerHTML.substring(0, 100) + (element.innerHTML.length > 100 ? '...' : ''),
+                        attributes: Array.from(element.attributes).map(attr => `${attr.name}="${attr.value}"`),
+                        boundEvents: element.getAttribute('data-bound-events') || 'Unknown'
+                    });
+                } else {
+                    console.error(`Element not found: #${id}`);
+                }
+                return element;
+            };
+            
+            window.checkLocalStorage = function() {
+                try {
+                    const motivateMeData = localStorage.getItem('motivateMeData');
+                    if (motivateMeData) {
+                        const data = JSON.parse(motivateMeData);
+                        console.log('📂 LocalStorage data:');
+                        console.log(data);
+                    } else {
+                        console.warn('No data found in localStorage for this app');
+                    }
+                } catch (e) {
+                    console.error('Error checking localStorage:', e);
+                }
+            };
+            
+            window.simulateClick = function(selector) {
+                try {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        console.log(`🖱️ Simulating click on: ${selector}`);
+                        element.click();
+                        return true;
+                    } else {
+                        console.error(`Cannot simulate click - element not found: ${selector}`);
+                        return false;
+                    }
+                } catch (e) {
+                    console.error(`Error simulating click on ${selector}:`, e);
+                    return false;
+                }
+            };
+            
+            // Set up the debug UI
+            document.addEventListener('DOMContentLoaded', function() {
+                // Toggle console visibility
+                const toggleConsole = document.getElementById('toggle-console');
+                const debugConsole = document.getElementById('debug-console');
+                
+                if (toggleConsole && debugConsole) {
+                    toggleConsole.addEventListener('click', function() {
+                        const isHidden = debugConsole.classList.toggle('minimized');
+                        toggleConsole.textContent = isHidden ? 'Show Console' : 'Hide Console';
+                    });
+                }
+                
+                // Element checker
+                const checkElementBtn = document.getElementById('check-element-btn');
+                const elementCheckInput = document.getElementById('element-check');
+                
+                if (checkElementBtn && elementCheckInput) {
+                    checkElementBtn.addEventListener('click', function() {
+                        const id = elementCheckInput.value.trim();
+                        if (id) {
+                            window.checkElement(id);
+                        } else {
+                            console.warn('Please enter an element ID to check');
+                        }
+                    });
+                }
+                
+                // Click simulator
+                const simulateClickBtn = document.getElementById('simulate-click-btn');
+                const clickSimInput = document.getElementById('click-sim');
+                
+                if (simulateClickBtn && clickSimInput) {
+                    simulateClickBtn.addEventListener('click', function() {
+                        const selector = clickSimInput.value.trim();
+                        if (selector) {
+                            window.simulateClick(selector);
+                        } else {
+                            console.warn('Please enter a selector for the element to click');
+                        }
+                    });
+                }
+                
+                // LocalStorage checker
+                const checkStorageBtn = document.getElementById('check-storage-btn');
+                if (checkStorageBtn) {
+                    checkStorageBtn.addEventListener('click', function() {
+                        window.checkLocalStorage();
+                    });
+                }
+                
+                // Clear console
+                const clearConsoleBtn = document.getElementById('clear-console-btn');
+                const debugOutput = document.getElementById('debug-output');
+                
+                if (clearConsoleBtn && debugOutput) {
+                    clearConsoleBtn.addEventListener('click', function() {
+                        debugOutput.innerHTML = '';
+                        console.log('Console cleared');
+                    });
+                }
+                
+                // JavaScript version switcher
+                const reloadPageBtn = document.getElementById('reload-page');
+                const jsVersionSelect = document.getElementById('js-version');
+                
+                if (reloadPageBtn && jsVersionSelect) {
+                    reloadPageBtn.addEventListener('click', function() {
+                        const selectedScript = jsVersionSelect.value;
+                        window.location.href = `?script=${selectedScript}`;
+                    });
+                }
+                
+                // Log initial debug information
+                console.log('🔍 Debug console initialized');
+                setTimeout(() => {
+                    console.log('📊 Checking DOM elements:');
+                    // Check critical elements
+                    ['task-input', 'task-list', 'add-task-btn', 'reflection-question', 
+                     'reflection-answer', 'save-reflection-btn', 'quote', 'new-quote-btn',
+                     'modal', 'close-modal', 'show-journal', 'show-settings'].forEach(id => {
+                        const element = document.getElementById(id);
+                        console.log(`${element ? '✅' : '❌'} #${id}`);
+                    });
+                }, 500);
+            });
+            
+            // Global error handler
+            window.addEventListener('error', function(event) {
+                console.error(`Uncaught error: ${event.message} at ${event.filename}:${event.lineno}`);
+                event.preventDefault();
+            });
+            
+            // Load the selected script
+            loadSelectedScript();
+        })();
+    </script>
+    
+    <script src="app.js"></script>
+</body>
+</html> 

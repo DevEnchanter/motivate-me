@@ -1,0 +1,46 @@
+{
+  "name": "MotivateMe",
+  "short_name": "MotivateMe",
+  "description": "Take small steps, one moment at a time",
+  "start_url": "/mobile.html",
+  "display": "standalone",
+  "background_color": "#f8f9fe",
+  "theme_color": "#6c5ce7",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "orientation": "portrait",
+  "categories": ["lifestyle", "health", "productivity"],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "MotivateMe home screen"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tasks",
+      "url": "/mobile.html#tasks",
+      "description": "View and manage your tasks"
+    },
+    {
+      "name": "Reflect",
+      "url": "/mobile.html#reflect",
+      "description": "Daily reflection"
+    }
+  ]
+} 

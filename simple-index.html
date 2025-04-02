@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MotivateMe - Take Small Steps</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #f8f9fe;
+            --card-color: #ffffff;
+            --text-color: #2d3436;
+            --text-muted: #636e72;
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --accent-color: #fd79a8;
+            --success-color: #00b894;
+            --border-color: #dfe6e9;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .app-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .app-title {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .app-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        
+        .section {
+            background-color: var(--card-color);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+        
+        .toggle-btn:hover {
+            color: var(--primary-color);
+        }
+        
+        .emergency-help {
+            text-align: center;
+            padding: 15px 20px;
+            border-radius: 8px;
+            background-color: #ffebee;
+            margin-bottom: 20px;
+        }
+        
+        .emergency-title {
+            color: #e53935;
+            margin-bottom: 10px;
+        }
+        
+        .help-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .help-link {
+            padding: 8px 16px;
+            background-color: white;
+            border: 1px solid #e53935;
+            border-radius: 20px;
+            color: #e53935;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .help-link:hover {
+            background-color: #e53935;
+            color: white;
+        }
+        
+        /* Moods */
+        .mood-tracker {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .mood-buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .mood-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .mood-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .mood-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .mood-emoji {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .mood-label {
+            font-size: 0.8rem;
+        }
+        
+        .mood-message {
+            text-align: center;
+            font-style: italic;
+            color: var(--text-muted);
+            height: 2.4em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Micro Goals */
+        .micro-goals {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .micro-goal {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .micro-checkbox {
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: var(--success-color);
+            width: 18px;
+            height: 18px;
+        }
+        
+        .micro-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+        
+        /* Tasks */
+        .tasks-container {
+            margin-top: 15px;
+        }
+        
+        .task-form {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .task-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px 0 0 6px;
+            font-size: 16px;
+        }
+        
+        .add-task-btn {
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .task-list {
+            list-style-type: none;
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .task-item:last-child {
+            border-bottom: none;
+        }
+        
+        .task-checkbox {
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: var(--success-color);
+            width: 18px;
+            height: 18px;
+        }
+        
+        .task-text {
+            flex: 1;
+        }
+        
+        .task-delete {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 8px;
+        }
+        
+        .task-delete:hover {
+            color: #e74c3c;
+        }
+        
+        .task-completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+        
+        /* Dashboard */
+        .dashboard {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        .streak-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            min-width: 100px;
+        }
+        
+        .streak-counter {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .streak-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        /* Reflection */
+        .reflection {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .reflection-question {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        .reflection-answer {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            resize: none;
+            font-family: inherit;
+            font-size: 16px;
+        }
+        
+        .reflection-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        /* Motivation */
+        .motivation {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .quote {
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn.secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn.secondary:hover {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        .action-links {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .action-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .action-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal.hidden {
+            display: none;
+        }
+        
+        .modal-container {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            padding: 15px;
+            display: flex;
+            justify-content: flex-end;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-body h2 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        /* Journal entries */
+        .journal-entries {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .journal-entry {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .journal-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        
+        .journal-prompt {
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .journal-text {
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        /* Settings */
+        .settings-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .setting-item label {
+            font-weight: 500;
+        }
+        
+        .setting-item select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .setting-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .danger-btn {
+            background-color: #e74c3c;
+        }
+        
+        .danger-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+            
+            .app-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1 class="app-title">MotivateMe</h1>
+            <p class="app-subtitle">Take small steps, one moment at a time</p>
+        </header>
+        
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Emergency Help</h2>
+                <button id="toggle-emergency" class="toggle-btn"><i class="fas fa-chevron-up"></i></button>
+            </div>
+            <div id="emergency-content" class="emergency-help">
+                <h3 class="emergency-title">Need immediate support?</h3>
+                <div class="help-links">
+                    <a href="tel:988" class="help-link">988 Lifeline</a>
+                    <a href="https://www.crisistextline.org/" class="help-link" target="_blank">Crisis Text Line</a>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <div class="mood-tracker">
+                <h3>How are you feeling right now?</h3>
+                <div class="mood-buttons">
+                    <button class="mood-btn" data-mood="1">
+                        <span class="mood-emoji">😔</span>
+                        <span class="mood-label">Low</span>
+                    </button>
+                    <button class="mood-btn" data-mood="2">
+                        <span class="mood-emoji">😐</span>
+                        <span class="mood-label">Neutral</span>
+                    </button>
+                    <button class="mood-btn" data-mood="3">
+                        <span class="mood-emoji">🙂</span>
+                        <span class="mood-label">Okay</span>
+                    </button>
+                    <button class="mood-btn" data-mood="4">
+                        <span class="mood-emoji">😊</span>
+                        <span class="mood-label">Good</span>
+                    </button>
+                </div>
+                <div id="mood-message" class="mood-message"></div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h3>Micro Goals - Small Wins</h3>
+            <div class="micro-goals">
+                <div id="micro-goals-list">
+                    <!-- Micro goals will be populated by JavaScript -->
+                </div>
+                <div class="micro-actions">
+                    <button id="refresh-micro-goals" class="btn secondary">New Goals</button>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Daily Tasks</h2>
+                <button id="toggle-tasks" class="toggle-btn"><i class="fas fa-chevron-up"></i></button>
+            </div>
+            <div id="tasks-content" class="tasks-container">
+                <div class="task-form">
+                    <input type="text" id="task-input" class="task-input" placeholder="Add a small, manageable task...">
+                    <button id="add-task-btn" class="add-task-btn"><i class="fas fa-plus"></i></button>
+                </div>
+                <ul id="task-list" class="task-list">
+                    <!-- Tasks will be populated by JavaScript -->
+                </ul>
+            </div>
+        </section>
+        
+        <section class="section">
+            <div class="dashboard">
+                <div class="streak-container">
+                    <span id="streak-counter" class="streak-counter">0</span>
+                    <span class="streak-label">Day Streak</span>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">Reflection</h2>
+                <button id="toggle-reflection" class="toggle-btn"><i class="fas fa-chevron-up"></i></button>
+            </div>
+            <div id="reflection-content" class="reflection">
+                <div id="reflection-question" class="reflection-question">
+                    <!-- Question will be populated by JavaScript -->
+                </div>
+                <textarea id="reflection-answer" class="reflection-answer" placeholder="Your thoughts..."></textarea>
+                <div class="reflection-actions">
+                    <button id="save-reflection-btn" class="btn">Save</button>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <div class="motivation">
+                <div id="quote" class="quote">
+                    <!-- Quote will be populated by JavaScript -->
+                </div>
+                <button id="new-quote-btn" class="btn secondary">New Reminder</button>
+            </div>
+        </section>
+        
+        <div class="action-links">
+            <a href="#" id="show-journal" class="action-link"><i class="fas fa-book"></i> Your Words</a>
+            <a href="#" id="show-why" class="action-link"><i class="fas fa-question-circle"></i> Why This Helps</a>
+            <a href="#" id="show-settings" class="action-link"><i class="fas fa-cog"></i> Settings</a>
+        </div>
+    </div>
+    
+    <div id="modal" class="modal hidden">
+        <div class="modal-container">
+            <div class="modal-header">
+                <button id="close-modal" class="close-modal">&times;</button>
+            </div>
+            <div id="modal-body" class="modal-body">
+                <!-- Modal content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <script src="fix-app.js"></script>
+</body>
+</html> 
