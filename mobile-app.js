@@ -85,47 +85,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Tab Navigation
     function setupTabs() {
-        const tabs = getAllElements('.tab');
-        const navItems = getAllElements('.nav-item');
+        // This function is now disabled as tab navigation is handled by inline script
+        // Keep this as a placeholder to avoid errors when it's called from init
+        console.log("Tab navigation is now handled by inline script");
         
-        // Click handler for tabs
-        function handleTabClick(e) {
-            e.preventDefault(); // Prevent default link behavior that causes scroll
-            const tabName = e.currentTarget.dataset.tab;
-            activateTab(tabName);
-        }
-        
-        // Activate tab and update UI
-        function activateTab(tabName) {
-            // Hide all tab content
-            getAllElements('.tab-content').forEach(content => {
-                content.style.display = 'none';
-            });
-            
-            // Show selected tab content
-            const selectedTab = getElement(`${tabName}-tab`);
-            if (selectedTab) {
-                selectedTab.style.display = 'block';
-            }
-            
-            // Update active states on tabs and nav items
-            tabs.forEach(tab => {
-                tab.classList.toggle('active', tab.dataset.tab === tabName);
-            });
-            
-            navItems.forEach(item => {
-                item.classList.toggle('active', item.dataset.tab === tabName);
-            });
-        }
-        
-        // Bind click events
-        tabs.forEach(tab => {
-            tab.addEventListener('click', handleTabClick);
-        });
-        
-        navItems.forEach(item => {
-            item.addEventListener('click', handleTabClick);
-        });
+        // Note: This function is intentionally left empty to avoid conflicts with
+        // the tab navigation implemented in mobile.html
     }
     
     // Mood Tracking

@@ -721,6 +721,70 @@
                     .catch(err => console.log('Service Worker registration failed:', err));
             });
         }
+        
+        // Prevent all anchor links from scrolling the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Store scroll positions for each tab
+            const tabScrollPositions = {};
+            
+            // Prevent all links from default behavior
+            document.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                });
+            });
+            
+            // Prevent all buttons from scrolling
+            document.querySelectorAll('button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                });
+            });
+            
+            // Fix for bottom navigation
+            document.querySelectorAll('.nav-item').forEach(navItem => {
+                navItem.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Store current scroll position for current tab
+                    const currentTabId = document.querySelector('.tab-content[style*="display: block"]')?.id;
+                    if (currentTabId) {
+                        tabScrollPositions[currentTabId] = window.scrollY;
+                    }
+                    
+                    // Handle tab switching via data attribute
+                    const tabName = this.getAttribute('data-tab');
+                    if (tabName) {
+                        // Hide all tab content
+                        document.querySelectorAll('.tab-content').forEach(content => {
+                            content.style.display = 'none';
+                        });
+                        
+                        // Show selected tab
+                        const selectedTab = document.getElementById(tabName + '-tab');
+                        if (selectedTab) {
+                            selectedTab.style.display = 'block';
+                            
+                            // Update active state
+                            document.querySelectorAll('.nav-item').forEach(item => {
+                                item.classList.remove('active');
+                            });
+                            this.classList.add('active');
+                            
+                            // Restore scroll position for this tab
+                            if (tabScrollPositions[tabName + '-tab']) {
+                                setTimeout(() => {
+                                    window.scrollTo(0, tabScrollPositions[tabName + '-tab']);
+                                }, 10);
+                            } else {
+                                // Reset scroll position for new tabs
+                                window.scrollTo(0, 0);
+                            }
+                        }
+                    }
+                });
+            });
+        });
     </script>
     <script src="mobile-app.js"></script>
 </body>
